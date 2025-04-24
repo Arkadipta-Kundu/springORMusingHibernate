@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+             http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/tx
+             http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- 1. Component scan for DAOs and services -->
+    <context:component-scan base-package="org.arkadipta" />
+
+    <!-- 2. DataSource -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="url"            value="jdbc:postgresql://localhost:5432/postgres"/>
+        <property name="username"       value="postgres"/>
+        <property name="password"       value="0000"/>
+    </bean>
+
+    <!-- 3. Hibernate SessionFactory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="org.arkadipta.entities"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+    </bean>
+
+
+<!--    <bean id="studentDao" class="org.arkadipta.dao.StudentDao">-->
+<!--    <property name="sessionFactory" ref="sessionFactory" />-->
+<!--    </bean>-->
+
+    <!-- 4. Transaction manager -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- 5. Enable annotation-driven transactions -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
